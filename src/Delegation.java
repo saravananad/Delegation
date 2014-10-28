@@ -74,27 +74,43 @@ class C112 extends C11 {
 
 // -------SIMULATING CLASS INHERITANCE BY DELEGATION ---------
 
+/********************************** Interface Definitions **********************************/
+
 interface I1 {
+	
 	public int m1();
 	public int p1(int m);
 	public int q1(int m);
-	public int getVariable();
+	public int getA1();
+	
 }
 
 interface I11 extends I1 {
+	
 	public int m11();
+	public int getA11();
+
 }
 
 interface I111 extends I11 {
+
 	public int m111();
+	public int getA111();
+
 }
 
 interface I112 extends I11 {
+
 	public int m112();
+	public int getA112();
+
 }
 
+/************************************ Class Definitions ************************************/
+
 class D1 implements I1 {
-	int a1 = 1;
+	
+	protected int a1 = 1;
 	I11 subclassInstance = null;
 	
 	public D1() {}
@@ -121,19 +137,19 @@ class D1 implements I1 {
 	}
 
 	@Override
-	public int getVariable() {
+	public int getA1() {
 		return a1;
 	}
 }
 
 class D11 implements I11 {
 
-	int a11 = 11;
+	protected int a11 = 11;
 	I1 parentInstance = null;
 	I11 subclassInstance = null;
 	
 	public D11() {
-		parentInstance = new D1();
+		parentInstance = new D1(this);
 	}
 	
 	public D11(I11 instance) {
@@ -156,7 +172,7 @@ class D11 implements I11 {
 		if(subclassInstance != null) {
 			return subclassInstance.p1(m);
 		} else {  
-			return m * parentInstance.getVariable();
+			return m * getA1();
 		
 		}
 	}
@@ -167,19 +183,22 @@ class D11 implements I11 {
 	}
 
 	@Override
-	public int getVariable() {
+	public int getA1() {
+		return parentInstance.getA1();
+	}
+
+	@Override
+	public int getA11() {
 		return a11;
 	}
 }
 
  
 class D111 implements I111 { 
-	int a111 = 111;
-	I1 rootParentInstance = null;
+	protected int a111 = 111;
 	I11 parentInstance = null;
 	
 	public D111() {
-		rootParentInstance = new D1();
 		parentInstance = new D11(this);
 	}
 
@@ -200,7 +219,7 @@ class D111 implements I111 {
 	
 	@Override
 	public int p1(int m) {
-		return m * rootParentInstance.getVariable() * parentInstance.getVariable();
+		return m * getA1() * getA11();
 	}
 
 	@Override
@@ -209,28 +228,38 @@ class D111 implements I111 {
 	}
 
 	@Override
-	public int getVariable() {
+	public int getA1() {
+		return parentInstance.getA1();
+	}
+	
+	@Override
+	public int getA11() {
+		return parentInstance.getA11();
+	}
+
+	@Override
+	public int getA111() {
 		return a111;
 	}
+
 }
 
 class D112 implements I112 {
-	int a112 = 112;
-	I1 rootParentInstance = null;
+	protected int a112 = 112;
 	I11 parentInstance = null;
 	
 	public D112() {
-		rootParentInstance = new D1();
 		parentInstance = new D11(this);
 	}
 
+	@Override
 	public int m112() {
 		return m1() + m11() + a112;
 	}
 
 	@Override
 	public int p1(int m) {
-		return m * rootParentInstance.getVariable() * parentInstance.getVariable() * a112;
+		return m * getA1() * getA11() * a112;
 	}
 
 	@Override
@@ -249,7 +278,18 @@ class D112 implements I112 {
 	}
 
 	@Override
-	public int getVariable() {
+	public int getA1() {
+		return parentInstance.getA1();
+	}
+	
+	@Override
+	public int getA11() {
+		return parentInstance.getA11();
+	}
+
+	@Override
+	public int getA112() {
 		return a112;
 	}
+
 }
