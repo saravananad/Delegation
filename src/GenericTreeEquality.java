@@ -46,12 +46,12 @@ class Iter<T extends Comparable<T>> {
 	}
 
 	public T next(Tree<T> tree) {
-		if (done()){
+		if (nodeStack.isEmpty()){
 			traverseLeft(tree);
 		}
 		
 		/* Pop the stack and traverse to the left*/
-		if (!done()){
+		if (!nodeStack.isEmpty()){
 			Tree<T> current = nodeStack.pop();
 			for (Tree<T> child = current.right; child != null; child = child.left) {
 				nodeStack.push(child);
@@ -64,6 +64,14 @@ class Iter<T extends Comparable<T>> {
 
 public class GenericTreeEquality {
 	static <T extends Comparable<T>> boolean equals(Tree<T> tree1, Tree<T> tree2) {
+		if (tree1 == null && tree2 == null) // Both the trees are null
+		{
+			return true;
+		}
+		else if (tree1 == null || tree2 == null) // Either of the trees is null
+		{
+			return false;
+		}
 		Iter<T> iteratorOne = new Iter<T>();
 		Iter<T> iteratorTwo = new Iter<T>();
 		T nextOne = null;
@@ -71,11 +79,7 @@ public class GenericTreeEquality {
 		do {
 			nextOne = iteratorOne.next(tree1);
 			nextTwo = iteratorTwo.next(tree2);	
-			if (nextOne == null && nextTwo == null) // Both the trees are null
-				return true;
-			else if (nextOne == null || nextTwo == null) // Either of the trees is null
-				return false;
-			else if (nextOne.compareTo(nextTwo) != 0){
+			if (nextOne.compareTo(nextTwo) != 0){
 				return false;
 			}
 		} while (!iteratorOne.done() && !iteratorTwo.done());
