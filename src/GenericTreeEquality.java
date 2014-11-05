@@ -46,19 +46,23 @@ class Iter<T extends Comparable<T>> {
 	}
 
 	public T next(Tree<T> tree) {
-		if (nodeStack.isEmpty()){
+		if (done()){
 			traverseLeft(tree);
 		}
-		Tree<T> current = nodeStack.pop();
-		for (Tree<T> child = current.right; child != null; child = child.left) {
-			nodeStack.push(child);
+		
+		/* Pop the stack and traverse to the left*/
+		if (!done()){
+			Tree<T> current = nodeStack.pop();
+			for (Tree<T> child = current.right; child != null; child = child.left) {
+				nodeStack.push(child);
+			}
+			return current.value;
 		}
-		return current.value;
+		return null; // Stack is Empty
 	}
 }
 
 public class GenericTreeEquality {
-	static boolean equalityCheck = true;
 	static <T extends Comparable<T>> boolean equals(Tree<T> tree1, Tree<T> tree2) {
 		Iter<T> iteratorOne = new Iter<T>();
 		Iter<T> iteratorTwo = new Iter<T>();
@@ -66,19 +70,23 @@ public class GenericTreeEquality {
 		T nextTwo = null;
 		do {
 			nextOne = iteratorOne.next(tree1);
-			nextTwo = iteratorTwo.next(tree2);			
-			if (!(nextOne.compareTo(nextTwo) == 0)){
-				equalityCheck = false;
-				break;
+			nextTwo = iteratorTwo.next(tree2);	
+			if (nextOne == null && nextTwo == null) // Both the trees are null
+				return true;
+			else if (nextOne == null || nextTwo == null) // Either of the trees is null
+				return false;
+			else if (nextOne.compareTo(nextTwo) != 0){
+				return false;
 			}
 		} while (!iteratorOne.done() && !iteratorTwo.done());
-		
+
 		// Clean-up : Return false when traversal is complete for ONLY one tree
 		boolean firstTreeDone = iteratorOne.done() && !iteratorTwo.done();
 		boolean secondTreeDone = !iteratorOne.done() && iteratorTwo.done();
-		if (firstTreeDone || secondTreeDone)
-			equalityCheck = false;
-		return equalityCheck;
+		if (firstTreeDone || secondTreeDone){
+			return false;
+		}
+		return true;
 	}
 
 	public static void main(String[] args) {
